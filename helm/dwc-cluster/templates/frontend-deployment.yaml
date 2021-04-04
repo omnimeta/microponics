@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- if not .Values.frontend.nameOverride }}
+  name: {{ include "dwc-cluster.fullname" . }}-frontend
+  {{- else }}
+  name: {{ include "dwc-cluster.fullname" . }}-{{ .Values.frontend.nameOverride }}
+  {{- end }}
+  labels:
+    {{- include "dwc-cluster.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.frontend.autoscaling.enabled }}
+  replicas: {{ .Values.frontend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "dwc-cluster.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.frontend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "dwc-cluster.selectorLabels" . | nindent 8 }}
+    spec:
+      # {{- with .Values.frontend.imagePullSecrets }}
+      # imagePullSecrets:
+      #   {{- toYaml . | nindent 8 }}
+      # {{- end }}
+      # serviceAccountName: {{ include "dwc-cluster.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.frontend.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.frontend.securityContext | nindent 12 }}
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          env:
+            - name: "DB_NAME"
+              valueFrom:
+                secretKeyRef:
+                  key: db_name
+                  name: {{ .Release.Name }}-secrets
+            - name: "DB_USER"
+              valueFrom:
+                secretKeyRef:
+                  key: db_user
+                  name: {{ .Release.Name }}-secrets
+            - name: "DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  key: db_password
+                  name: {{ .Release.Name }}-secrets
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
+      {{- with .Values.frontend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frontend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frontend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

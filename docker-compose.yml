@@ -1,0 +1,65 @@
+version: '3'
+
+networks:
+  primary:
+    driver: bridge
+
+services:
+
+  grow-controller:
+    image: github.com/omnimeta/dwc-cluster/grow-controller:local
+    build:
+      context: grow-controller/
+      dockerfile: Dockerfile
+    container_name: grow-controller
+    tty: true
+    restart: 'no'
+    environment:
+      DB_NAME: dwcluster
+      DB_USER: clusteradmin
+      DB_PASSWORD: clusteradminpassword
+    working_dir: /var/www/grow-controller
+    networks:
+      - primary
+    volumes:
+      - ./grow-controller:/var/www/grow-controller
+    ports: []
+    depends_on:
+      - storage
+
+  storage:
+    image: mysql:8.0.23
+    container_name: storage
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: dwccluster
+      MYSQL_USER: clusteradmin
+      MYSQL_PASSWORD: clusteradminpassword
+      MYSQL_ROOT_PASSWORD: dbrootpassword
+    networks:
+      - primary
+    ports:
+      - 3306:3306
+
+  frontend:
+    image: github.com/omnimeta/dwc-cluster/frontend:local
+    build:
+      context: frontend/
+      dockerfile: Dockerfile
+    container_name: frontend
+    working_dir: /var/www/
+    restart: 'no'
+    environment:
+      DB_NAME: dwcluster
+      DB_USER: clusteradmin
+      DB_PASSWORD: clusteradminpassword
+    networks:
+      - primary
+    volumes:
+      - ./frontend:/var/www/
+    ports:
+      - 8094:8080
+    depends_on:
+      - storage
+      - grow-controller

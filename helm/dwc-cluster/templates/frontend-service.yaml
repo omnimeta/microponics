@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  {{- if not .Values.frontend.nameOverride }}
+  name: {{ include "dwc-cluster.fullname" . }}-frontend
+  {{- else }}
+  name: {{ include "dwc-cluster.fullname" . }}-{{ .Values.frontend.nameOverride }}
+  {{- end }}
+  labels:
+    {{- include "dwc-cluster.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.frontend.service.type }}
+  ports:
+    - port: {{ .Values.frontend.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "dwc-cluster.selectorLabels" . | nindent 4 }}

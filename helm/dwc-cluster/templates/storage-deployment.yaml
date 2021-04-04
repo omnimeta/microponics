@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- if not .Values.storage.nameOverride }}
+  name: {{ include "dwc-cluster.fullname" . }}-storage
+  {{- else }}
+  name: {{ include "dwc-cluster.fullname" . }}-{{ .Values.storage.nameOverride }}
+  {{- end }}
+  labels:
+    {{- include "dwc-cluster.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.storage.autoscaling.enabled }}
+  replicas: {{ .Values.storage.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "dwc-cluster.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.storage.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "dwc-cluster.selectorLabels" . | nindent 8 }}
+    spec:
+      # {{- with .Values.storage.imagePullSecrets }}
+      # imagePullSecrets:
+      #   {{- toYaml . | nindent 8 }}
+      # {{- end }}
+      # serviceAccountName: {{ include "dwc-cluster.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.storage.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.storage.securityContext | nindent 12 }}
+          image: "{{ .Values.storage.image.repository }}:{{ .Values.storage.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.storage.image.pullPolicy }}
+          env:
+            - name: "MYSQL_DATABASE"
+              valueFrom:
+                secretKeyRef:
+                  key: db_name
+                  name: {{ .Release.Name }}-secrets
+            - name: "MYSQL_USER"
+              valueFrom:
+                secretKeyRef:
+                  key: db_user
+                  name: {{ .Release.Name }}-secrets
+            - name: "MYSQL_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  key: db_password
+                  name: {{ .Release.Name }}-secrets
+            - name: "MYSQL_ROOT_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  key: db_root_password
+                  name: {{ .Release.Name }}-secrets
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.storage.resources | nindent 12 }}
+      {{- with .Values.storage.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.storage.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.storage.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
