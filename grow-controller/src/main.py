@@ -6,10 +6,11 @@ def main():
         print('Running app...')
 
         # readiness and liveliness check
-        if not isfile('/var/www/ready'):
+        ready_path = '/tmp/ready/check'
+        if not isfile(ready_path):
             ready_file = None
             try:
-                ready_file = open('/var/www/ready', 'w')
+                ready_file = open(ready_path, 'w')
                 ready_file.write('Ready')
             except Exception as err:
                 print('Error: %s' % str(err))

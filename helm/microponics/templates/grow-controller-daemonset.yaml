@@ -38,7 +38,7 @@ spec:
           args:
             - /bin/sh
             - -c
-            - touch /tmp/live
+            - touch /tmp/ready/check
           env:
             - name: DB_ADDRESS
               value: {{ .Values.ingress.storage_host }}:{{ .Values.frontend.service.port }}
@@ -58,18 +58,24 @@ spec:
             exec:
               command:
                 - cat
-                - /tmp/live
+                - /tmp/ready/check; rm /tmp/ready/check
             initialDelaySeconds: 10
-            periodSeconds: 10
+            periodSeconds: 20
           readinessProbe:
             exec:
               command:
                 - cat
-                - /var/www/ready; rm /var/www/ready
+                - /tmp/ready/check; rm /tmp/ready/check
             initialDelaySeconds: 10
             periodSeconds: 20
           resources:
             {{- toYaml .Values.growcontroller.resources | nindent 12 }}
+          volumeMounts:
+            - name: ready
+              mountPath: /tmp/ready
+      volumes:
+        - name: ready
+          emptyDir: {}
       {{- with .Values.growcontroller.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
