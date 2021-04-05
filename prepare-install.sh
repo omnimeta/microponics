@@ -1,10 +1,10 @@
 #!/bin/sh -ex
 
 IMAGE_PATH="install/images"
-CHART_PATH="install/dwc-cluster"
-STORAGE_IMAGE="mysql/mysql-server:8.0.23"
-FRONTEND_IMAGE="github.com/omnimeta/dwc-cluster/frontend:local"
-GROW_CTRL_IMAGE="github.com/omnimeta/dwc-cluster/grow-controller:local"
+CHART_PATH="install/microponics"
+STORAGE_IMAGE="github.com/omnimeta/microponics/storage:local"
+FRONTEND_IMAGE="github.com/omnimeta/microponics/frontend:local"
+GROW_CTRL_IMAGE="github.com/omnimeta/microponics/grow-controller:local"
 
 docker-compose build frontend grow-controller
 docker-compose pull storage

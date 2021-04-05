@@ -7,7 +7,7 @@ networks:
 services:
 
   grow-controller:
-    image: github.com/omnimeta/dwc-cluster/grow-controller:local
+    image: github.com/omnimeta/microponics/grow-controller:local
     build:
       context: grow-controller/
       dockerfile: Dockerfile
@@ -15,9 +15,9 @@ services:
     tty: true
     restart: 'no'
     environment:
-      DB_NAME: dwcluster
-      DB_USER: clusteradmin
-      DB_PASSWORD: clusteradminpassword
+      DB_ADDRESS: storage:9000
+      NODE_NAME: node001
+      POD_NAME: pod001
     working_dir: /var/www/grow-controller
     networks:
       - primary
@@ -28,22 +28,24 @@ services:
       - storage
 
   storage:
-    image: mysql/mysql-server:8.0.23
+    image: github.com/omnimeta/microponics/storage:local
+    build:
+      context: storage/
+      dockerfile: Dockerfile
     container_name: storage
     tty: true
     restart: always
     environment:
-      MYSQL_DATABASE: dwccluster
-      MYSQL_USER: clusteradmin
-      MYSQL_PASSWORD: clusteradminpassword
-      MYSQL_ROOT_PASSWORD: dbrootpassword
+       DB_FILE: /var/storage/microponics.sql
     networks:
       - primary
+    volumes:
+      - ./storage:/var/www/
     ports:
-      - 3306:3306
+      - 9000:8080
 
   frontend:
-    image: github.com/omnimeta/dwc-cluster/frontend:local
+    image: github.com/omnimeta/microponics/frontend:local
     build:
       context: frontend/
       dockerfile: Dockerfile
@@ -51,9 +53,7 @@ services:
     working_dir: /var/www/
     restart: 'no'
     environment:
-      DB_NAME: dwcluster
-      DB_USER: clusteradmin
-      DB_PASSWORD: clusteradminpassword
+      DB_ADDRESS: storage:9000
     networks:
       - primary
     volumes:

@@ -38,25 +38,10 @@ spec:
           image: "{{ .Values.storage.image.repository }}:{{ .Values.storage.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.storage.image.pullPolicy }}
           env:
-            - name: "MYSQL_DATABASE"
+            - name: DB_FILE
               valueFrom:
                 secretKeyRef:
-                  key: db_name
-                  name: {{ .Release.Name }}-secrets
-            - name: "MYSQL_USER"
-              valueFrom:
-                secretKeyRef:
-                  key: db_user
-                  name: {{ .Release.Name }}-secrets
-            - name: "MYSQL_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  key: db_password
-                  name: {{ .Release.Name }}-secrets
-            - name: "MYSQL_ROOT_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  key: db_root_password
+                  key: db_filepath
                   name: {{ .Release.Name }}-secrets
           ports:
             - name: http
@@ -65,13 +50,24 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: http
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /
-              port: http
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
           resources:
             {{- toYaml .Values.storage.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: "{{ .Values.storage.pathOnContainer }}"
+              name: primary-storage
+      volumes:
+        - name: primary-storage
+          persistentVolumeClaim:
+            claimName: primary-storage-claim
       {{- with .Values.storage.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

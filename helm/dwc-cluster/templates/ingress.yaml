@@ -1,7 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "dwc-cluster.fullname" . -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 {{- else -}}
 apiVersion: extensions/v1beta1
 {{- end }}
@@ -26,17 +26,26 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.ingress.frontendHost }}
       http:
         paths:
           - path: /
             backend:
-              {{- if not $.Values.frontend.nameOverride }}
+              {{- if not .Values.frontend.nameOverride }}
               serviceName: {{ $fullName }}-frontend
               {{- else }}
-              serviceName: {{ $fullName }}-{{ $.Values.frontend.nameOverride }}
+              serviceName: {{ $fullName }}-{{ .Values.frontend.nameOverride }}
               {{- end}}
-              servicePort: {{ $.Values.frontend.service.port }}
-    {{- end }}
+              servicePort: {{ .Values.frontend.service.port }}
+    - host: {{ .Values.ingress.storageHost }}
+      http:
+        paths:
+          - path: /
+            backend:
+              {{- if not .Values.storage.nameOverride }}
+              serviceName: {{ $fullName }}-storage
+              {{- else }}
+              serviceName: {{ $fullName }}-{{ .Values.storage.nameOverride }}
+              {{- end}}
+              servicePort: {{ .Values.storage.service.port }}
   {{- end }}

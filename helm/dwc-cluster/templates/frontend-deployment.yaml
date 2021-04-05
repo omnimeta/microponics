@@ -38,33 +38,24 @@ spec:
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           env:
-            - name: "DB_NAME"
-              valueFrom:
-                secretKeyRef:
-                  key: db_name
-                  name: {{ .Release.Name }}-secrets
-            - name: "DB_USER"
-              valueFrom:
-                secretKeyRef:
-                  key: db_user
-                  name: {{ .Release.Name }}-secrets
-            - name: "DB_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  key: db_password
-                  name: {{ .Release.Name }}-secrets
+            - name: DB_ADDRESS
+              value: {{ .Values.ingress.storage_host }}:{{ .Values.frontend.service.port }}
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
           readinessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
       {{- with .Values.frontend.nodeSelector }}

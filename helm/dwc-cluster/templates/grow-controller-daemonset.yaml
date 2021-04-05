@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   {{- if not .Values.growcontroller.nameOverride }}
   name: {{ include "dwc-cluster.fullname" . }}-growcontroller
@@ -8,10 +8,8 @@ metadata:
   {{- end }}
   labels:
     {{- include "dwc-cluster.labels" . | nindent 4 }}
+  namespace: default
 spec:
-  {{- if not .Values.growcontroller.autoscaling.enabled }}
-  replicas: {{ .Values.growcontroller.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "dwc-cluster.selectorLabels" . | nindent 6 }}
@@ -37,44 +35,42 @@ spec:
             {{- toYaml .Values.growcontroller.securityContext | nindent 12 }}
           image: "{{ .Values.growcontroller.image.repository }}:{{ .Values.growcontroller.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.growcontroller.image.pullPolicy }}
+          args:
+            - /bin/sh
+            - -c
+            - touch /tmp/live
           env:
-            - name: "DB_NAME"
+            - name: DB_ADDRESS
+              value: {{ .Values.ingress.storage_host }}:{{ .Values.frontend.service.port }}
+            - name: NODE_NAME
               valueFrom:
-                secretKeyRef:
-                  key: db_name
-                  name: {{ .Release.Name }}-secrets
-            - name: "DB_USER"
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
               valueFrom:
-                secretKeyRef:
-                  key: db_user
-                  name: {{ .Release.Name }}-secrets
-            - name: "DB_PASSWORD"
-              valueFrom:
-                secretKeyRef:
-                  key: db_password
-                  name: {{ .Release.Name }}-secrets
+                fieldRef:
+                  fieldPath: metadata.name
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /
+            exec:
+              command:
+                - cat
+                - /tmp/live
               port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
           readinessProbe:
-            httpGet:
-              path: /
-              port: http
+            exec:
+              command:
+                - cat
+                - /var/www/ready; rm /var/www/ready
+            initialDelaySeconds: 10
+            periodSeconds: 20
           resources:
             {{- toYaml .Values.growcontroller.resources | nindent 12 }}
-      {{- with .Values.growcontroller.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.growcontroller.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       {{- with .Values.growcontroller.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
