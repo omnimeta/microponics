@@ -59,7 +59,6 @@ spec:
               command:
                 - cat
                 - /tmp/live
-              port: http
             initialDelaySeconds: 10
             periodSeconds: 10
           readinessProbe:

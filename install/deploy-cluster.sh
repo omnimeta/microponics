@@ -13,10 +13,12 @@ microk8s ctr image import ${IMAGE_PATH}/frontend-image.tar --no-unpack
 
 # setup storage if this is a master node
 if [ "${MASTER}" = "true" ]; then
-  microk8s kubectl label nodes ubuntu storage_node=true
+  microk8s kubectl label nodes ubuntu storage_node=true --overwrite
   if [ ! -d "${STORAGE_PATH}" ]; then
     mkdir -p ${STORAGE_PATH}
   fi
+else
+  microk8s kubectl label nodes ubuntu storage_node=false --overwrite
 fi
 
 microk8s helm3 install ${CHART_NAME} ${CHART_PATH} -f ${CHART_PATH}/values.yaml --debug
