@@ -3,7 +3,7 @@ nameOverride: "microponics"
 frontend:
   replicaCount: 1
   image:
-    repository: github.com/omnimeta/microponics:frontend
+    repository: github.com/omnimeta/microponics/frontend
     pullPolicy: Never
     # Overrides the image tag whose default is the chart appVersion.
     tag: "local"
