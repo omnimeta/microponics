@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y vim curl
 RUN groupadd -g 1000 grow
 RUN useradd -u 1000 -m -s /bin/bash -g grow grow
 
-COPY --chmod=grow:grow ./ /var/www
+COPY ./ /var/www
+RUN chown -R grow:grow /var/www
 
 USER grow
 RUN pip install -r requirements.txt

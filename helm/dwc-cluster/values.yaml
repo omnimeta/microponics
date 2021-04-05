@@ -95,7 +95,7 @@ growcontroller:
 storage:
   replicaCount: 1
   image:
-    repository: mysql
+    repository: mysql/mysql-server
     pullPolicy: Never
     # Overrides the image tag whose default is the chart appVersion.
     tag: "8.0.23"
