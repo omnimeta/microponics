@@ -2,17 +2,17 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   {{- if not .Values.growcontroller.nameOverride }}
-  name: {{ include "dwc-cluster.fullname" . }}-growcontroller
+  name: {{ include "microponics.fullname" . }}-growcontroller
   {{- else }}
-  name: {{ include "dwc-cluster.fullname" . }}-{{ .Values.growcontroller.nameOverride }}
+  name: {{ include "microponics.fullname" . }}-{{ .Values.growcontroller.nameOverride }}
   {{- end }}
   labels:
-    {{- include "dwc-cluster.labels" . | nindent 4 }}
+    {{- include "microponics.labels" . | nindent 4 }}
   namespace: default
 spec:
   selector:
     matchLabels:
-      {{- include "dwc-cluster.selectorLabels" . | nindent 6 }}
+      {{- include "microponics.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.growcontroller.podAnnotations }}
@@ -20,13 +20,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "dwc-cluster.selectorLabels" . | nindent 8 }}
+        {{- include "microponics.selectorLabels" . | nindent 8 }}
     spec:
       # {{- with .Values.growcontroller.imagePullSecrets }}
       # imagePullSecrets:
       #   {{- toYaml . | nindent 8 }}
       # {{- end }}
-      # serviceAccountName: {{ include "dwc-cluster.serviceAccountName" . }}
+      # serviceAccountName: {{ include "microponics.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.growcontroller.podSecurityContext | nindent 8 }}
       containers:

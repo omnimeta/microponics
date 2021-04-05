@@ -1,8 +1,8 @@
 #!/bin/sh -ex
 
 IMAGE_PATH="images"
-CHART_PATH="./dwc-cluster"
-CHART_NAME="dwc-cluster"
+CHART_PATH="./microponics"
+CHART_NAME="microponics"
 STORAGE_PATH="${HOME}/storage"
 
 microk8s start

@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   {{- if not .Values.storage.nameOverride }}
-  name: {{ include "dwc-cluster.fullname" . }}-storage
+  name: {{ include "microponics.fullname" . }}-storage
   {{- else }}
-  name: {{ include "dwc-cluster.fullname" . }}-{{ .Values.storage.nameOverride }}
+  name: {{ include "microponics.fullname" . }}-{{ .Values.storage.nameOverride }}
   {{- end }}
   labels:
-    {{- include "dwc-cluster.labels" . | nindent 4 }}
+    {{- include "microponics.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.storage.autoscaling.enabled }}
   replicas: {{ .Values.storage.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "dwc-cluster.selectorLabels" . | nindent 6 }}
+      {{- include "microponics.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.storage.podAnnotations }}
@@ -22,13 +22,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "dwc-cluster.selectorLabels" . | nindent 8 }}
+        {{- include "microponics.selectorLabels" . | nindent 8 }}
     spec:
       # {{- with .Values.storage.imagePullSecrets }}
       # imagePullSecrets:
       #   {{- toYaml . | nindent 8 }}
       # {{- end }}
-      # serviceAccountName: {{ include "dwc-cluster.serviceAccountName" . }}
+      # serviceAccountName: {{ include "microponics.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.storage.podSecurityContext | nindent 8 }}
       containers:

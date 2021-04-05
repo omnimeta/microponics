@@ -1,4 +1,4 @@
-nameOverride: "dwc-cluster"
+nameOverride: "microponics"
 
 frontend:
   replicaCount: 1

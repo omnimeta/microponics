@@ -2,12 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   {{- if not .Values.storage.nameOverride }}
-  name: {{ include "dwc-cluster.fullname" . }}-storage
+  name: {{ include "microponics.fullname" . }}-storage
   {{- else }}
-  name: {{ include "dwc-cluster.fullname" . }}-{{ .Values.storage.nameOverride }}
+  name: {{ include "microponics.fullname" . }}-{{ .Values.storage.nameOverride }}
   {{- end }}
   labels:
-    {{- include "dwc-cluster.labels" . | nindent 4 }}
+    {{- include "microponics.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.storage.service.type }}
   ports:
@@ -16,4 +16,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "dwc-cluster.selectorLabels" . | nindent 4 }}
+    {{- include "microponics.selectorLabels" . | nindent 4 }}

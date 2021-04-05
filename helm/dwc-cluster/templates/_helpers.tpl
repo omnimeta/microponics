@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "dwc-cluster.name" -}}
+{{- define "microponics.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "dwc-cluster.fullname" -}}
+{{- define "microponics.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "dwc-cluster.chart" -}}
+{{- define "microponics.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "dwc-cluster.labels" -}}
-helm.sh/chart: {{ include "dwc-cluster.chart" . }}
-{{ include "dwc-cluster.selectorLabels" . }}
+{{- define "microponics.labels" -}}
+helm.sh/chart: {{ include "microponics.chart" . }}
+{{ include "microponics.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "dwc-cluster.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "dwc-cluster.name" . }}
+{{- define "microponics.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "microponics.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "dwc-cluster.serviceAccountName" -}}
+{{- define "microponics.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "dwc-cluster.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "microponics.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
