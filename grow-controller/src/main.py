@@ -1,5 +1,8 @@
-from os.path import isfile
+import os
 from time import sleep
+
+STORAGE_ADDR = 'http://%s:%s' % (os.environ['MICROPONICS_STORAGE_SERVICE_HOST'],
+                                 os.environ['MICROPONICS_STORAGE_SERVICE_PORT'])
 
 def main():
     while True:
@@ -11,11 +14,11 @@ def main():
         ready_file = None
         live_file = None
         try:
-            if not isfile(ready_path):
+            if not os.path.isfile(ready_path):
                 ready_file = open(ready_path, 'w')
                 ready_file.write('Ready')
 
-            if not isfile(live_path):
+            if not os.path.isfile(live_path):
                 live_file = open(live_path, 'w')
                 live_file.write('Alive')
         except Exception as err:

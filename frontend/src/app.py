@@ -1,6 +1,9 @@
+import os
 from flask import Flask, url_for, render_template
 
 APP = Flask(__name__)
+STORAGE_ADDR = 'http://%s:%s' % (os.environ['MICROPONICS_STORAGE_SERVICE_HOST'],
+                                 os.environ['MICROPONICS_STORAGE_SERVICE_PORT'])
 
 @APP.route('/', methods=[ 'GET' ])
 def homepage():
