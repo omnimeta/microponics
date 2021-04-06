@@ -12,7 +12,7 @@ spec:
   type: {{ .Values.storage.service.type }}
   ports:
     - port: {{ .Values.storage.service.port }}
-      targetPort: http
+      targetPort: 8080
       protocol: TCP
       name: http
   selector:

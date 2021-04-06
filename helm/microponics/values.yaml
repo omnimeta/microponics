@@ -10,7 +10,7 @@ frontend:
   # imagePullSecrets: []
   service:
     type: ClusterIP
-    port: 8080
+    port: 9031
   nameOverride: "frontend"
   serviceAccount:
     # Specifies whether a service account should be created
@@ -62,7 +62,7 @@ growcontroller:
   # imagePullSecrets: []
   service:
     type: ClusterIP
-    port: 8080
+    port: 9032
   nameOverride: "grow-controller"
   podAnnotations: {}
   podSecurityContext: {}
@@ -102,7 +102,7 @@ storage:
   # imagePullSecrets: []
   service:
     type: ClusterIP
-    port: 8080
+    port: 9033
   nameOverride: "storage"
   serviceAccount:
     # Specifies whether a service account should be created
