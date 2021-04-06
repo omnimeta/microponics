@@ -1,0 +1,38 @@
+{{- if .Values.frontendingress.enabled -}}
+{{- $fullName := include "microponics.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "microponics.labels" . | nindent 4 }}
+  {{- with .Values.frontendingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.frontendingress.tls }}
+  tls:
+    {{- range .Values.frontendingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                {{- if not .Values.frontend.nameOverride }}
+                name: {{ $fullName }}-frontend
+                {{- else }}
+                name: {{ $fullName }}-{{ .Values.frontend.nameOverride }}
+                {{- end}}
+                port:
+                  number: {{ .Values.frontend.service.port }}
+  {{- end }}

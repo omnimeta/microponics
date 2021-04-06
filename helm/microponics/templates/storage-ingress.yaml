@@ -1,4 +1,4 @@
-{{- if .Values.ingress.enabled -}}
+{{- if .Values.storageingress.enabled -}}
 {{- $fullName := include "microponics.fullname" . -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -6,14 +6,14 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "microponics.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  {{- with .Values.storageingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .Values.ingress.tls }}
+  {{- if .Values.storageingress.tls }}
   tls:
-    {{- range .Values.ingress.tls }}
+    {{- range .Values.storageingress.tls }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -22,24 +22,9 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    - host: {{ .Values.ingress.frontendHost }}
-      http:
+    - http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                {{- if not .Values.frontend.nameOverride }}
-                name: {{ $fullName }}-frontend
-                {{- else }}
-                name: {{ $fullName }}-{{ .Values.frontend.nameOverride }}
-                {{- end}}
-                port:
-                  number: {{ .Values.frontend.service.port }}
-    - host: {{ .Values.ingress.storageHost }}
-      http:
-        paths:
-          - path: /
+          - path: /db
             pathType: Prefix
             backend:
               service:
