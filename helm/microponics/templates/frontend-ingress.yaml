@@ -3,7 +3,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $fullName }}-frontend
   labels:
     {{- include "microponics.labels" . | nindent 4 }}
   {{- with .Values.frontendingress.annotations }}
