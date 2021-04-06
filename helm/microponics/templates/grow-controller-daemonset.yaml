@@ -53,17 +53,23 @@ spec:
           livenessProbe:
             exec:
               command:
+                - /bin/sh
+                - -c
                 - cat
                 - /tmp/health/alive && rm /tmp/health/alive
             initialDelaySeconds: 10
             periodSeconds: 20
+            timeoutSeconds: 5
           readinessProbe:
             exec:
               command:
+                - /bin/sh
+                - -c
                 - cat
                 - /tmp/health/ready && rm /tmp/health/ready
             initialDelaySeconds: 10
             periodSeconds: 20
+            timeoutSeconds: 5
           resources:
             {{- toYaml .Values.growcontroller.resources | nindent 12 }}
           volumeMounts:
