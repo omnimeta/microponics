@@ -6,7 +6,7 @@ CHART_NAME="microponics"
 STORAGE_PATH="${HOME}/storage"
 
 microk8s start
-microk8s enable dns storage helm3 ingress
+microk8s enable storage helm3 ingress
 microk8s ctr image import ${IMAGE_PATH}/storage-image.tar --no-unpack
 microk8s ctr image import ${IMAGE_PATH}/grow-controller-image.tar --no-unpack
 microk8s ctr image import ${IMAGE_PATH}/frontend-image.tar --no-unpack

@@ -37,8 +37,6 @@ spec:
           image: "{{ .Values.growcontroller.image.repository }}:{{ .Values.growcontroller.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.growcontroller.image.pullPolicy }}
           env:
-            - name: DB_ADDRESS
-              value: storage.default:{{ .Values.storage.service.port }}
             - name: NODE_NAME
               valueFrom:
                 fieldRef:

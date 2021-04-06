@@ -15,7 +15,8 @@ services:
     tty: true
     restart: 'no'
     environment:
-      DB_ADDRESS: storage:9000
+      MICROPONICS_STORAGE_SERVICE_HOST: storage
+      MICROPONICS_STORAGE_SERVICE_PORT: 9000
       NODE_NAME: node001
       POD_NAME: pod001
     working_dir: /var/www/grow-controller
@@ -53,7 +54,8 @@ services:
     working_dir: /var/www/
     restart: 'no'
     environment:
-      DB_ADDRESS: storage:9000
+      MICROPONICS_STORAGE_SERVICE_HOST: storage
+      MICROPONICS_STORAGE_SERVICE_PORT: 9000
     networks:
       - primary
     volumes:

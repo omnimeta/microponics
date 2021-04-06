@@ -38,9 +38,7 @@ spec:
             {{- toYaml .Values.frontend.securityContext | nindent 12 }}
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
-          env:
-            - name: DB_ADDRESS
-              value: storage.default:{{ .Values.storage.service.port }}
+          env: []
           ports:
             - name: http
               containerPort: 8080
