@@ -23,6 +23,7 @@ spec:
       {{- end }}
       labels:
         {{- include "microponics.selectorLabels" . | nindent 8 }}
+        service: storage
     spec:
       # {{- with .Values.storage.imagePullSecrets }}
       # imagePullSecrets:

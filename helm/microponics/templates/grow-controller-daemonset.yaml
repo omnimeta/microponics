@@ -21,6 +21,7 @@ spec:
       {{- end }}
       labels:
         {{- include "microponics.selectorLabels" . | nindent 8 }}
+        service: grow-controller
     spec:
       # {{- with .Values.growcontroller.imagePullSecrets }}
       # imagePullSecrets:

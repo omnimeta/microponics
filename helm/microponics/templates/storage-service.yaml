@@ -16,4 +16,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "microponics.selectorLabels" . | nindent 4 }}
+    service: storage
