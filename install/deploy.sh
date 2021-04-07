@@ -13,7 +13,7 @@ microk8s start
 microk8s enable storage
 microk8s ctr image import ${IMAGE_PATH}/grow-controller-image.tar --no-unpack
 
-if [ "${MASTER}" = "true" ]; then
+if [ "${1}" = "master" ]; then
   microk8s kubectl label nodes ${DEFAULT_NODE_NAME} storage_node=true --overwrite
   if [ ! -d "${STORAGE_PATH}" ]; then
     mkdir -p ${STORAGE_PATH}
