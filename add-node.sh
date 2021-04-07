@@ -13,5 +13,5 @@ fi
 eval `ssh-agent`
 chmod 600 ${SSH_KEY_PATH}
 ssh-add ${SSH_KEY_PATH}
-ssh -o "StrictHostKeyChecking no" ${NODE_USER}@${NODE_PRIVATE_IP} "microk8s join $(ip route get 1.2.3.4 | awk '{print $7}' | head -n 1):25000/$(microk8s add-node | grep 'microk8s join' | head -n 1 | grep -Eo '[a-z0-9]{32}$')"
+ssh -o "StrictHostKeyChecking no" ${NODE_USER}@${NODE_PRIVATE_IP} "echo 'expirement98' | sudo -S /snap/bin/microk8s join $(ip route get 1.2.3.4 | awk '{print $7}' | head -n 1):25000/$(microk8s add-node | grep 'microk8s join' | head -n 1 | grep -Eo '[a-z0-9]{32}$')"
 eval `ssh-agent -k`
