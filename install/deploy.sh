@@ -1,11 +1,12 @@
 #!/bin/sh -ex
 
-IMAGE_PATH="images"
-CHART_PATH="./microponics"
+PROJECT_DIR="${HOME}/microponics"
+IMAGE_PATH="${PROJECT_DIR}/install/images"
+CHART_PATH="${PROJECT_DIR}/install/microponics"
 CHART_NAME="microponics"
 STORAGE_PATH="${HOME}/storage"
 DEFAULT_NODE_NAME=`hostname`
-SSH_KEY_PATH="${HOME}/microponics/keys/microponics.pub"
+SSH_KEY_PATH="${PROJECT_DIR}/keys/microponics.pub"
 AUTH_KEY_FILE="${HOME}/.ssh/authorized_keys"
 
 sudo systemctl start docker.service
@@ -36,5 +37,6 @@ else
     cat ${SSH_KEY_PATH} >> ${AUTH_KEY_FILE}
     chmod 644 ${AUTH_KEY_FILE}
   fi
-  echo "Run \"~/microponics/add-node.sh `id -u -n` `ip route get 1.2.3.4 | awk '{print $7}' | head -n 1`\" on the master node"
+  echo "Run the following command on the MASTER node to connect this node to the microponics cluster:"
+  echo "~/microponics/add-node.sh `id -u -n` `ip route get 1.2.3.4 | awk '{print $7}' | head -n 1`"
 fi
