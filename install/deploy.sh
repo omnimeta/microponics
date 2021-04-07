@@ -6,6 +6,7 @@ CHART_NAME="microponics"
 STORAGE_PATH="${HOME}/storage"
 DEFAULT_NODE_NAME=`hostname`
 SSH_KEY_PATH="${HOME}/microponics/keys/microponics.pub"
+AUTH_KEY_FILE="${HOME}/.ssh/authorized_keys"
 
 sudo systemctl start docker.service
 microk8s start
@@ -31,10 +32,9 @@ else
   microk8s kubectl label nodes ${DEFAULT_NODE_NAME} storage_node=false --overwrite
   sudo systemctl start sshd.service
   set +x
-  if [ -z "`cat ${HOME}/.ssh/authorized_keys | grep microponics`" ]; then
-    cat ${SSH_KEY_PATH} >> ${HOME}/.ssh/authorized_keys
+  if [ ! -f "${AUTH_KEY_FILE}" ] || [ -z "`cat ${AUTH_KEY_FILE} | grep -o microponics`" ]; then
+    cat ${SSH_KEY_PATH} >> ${AUTH_KEY_FILE}
+    chmod 644 ${AUTH_KEY_FILE}
   fi
-  echo "Run \`~/microponics/add-node.sh `hostname` `ip addr | awk 'print $7'`\` on the master node"
+  echo "Run \"~/microponics/add-node.sh `id -u -n` `ip route get 1.2.3.4 | awk '{print $7}' | head -n 1`\" on the master node"
 fi
-
-microk8s status --wait-ready
