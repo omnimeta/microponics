@@ -5,6 +5,7 @@ CHART_PATH="./microponics"
 CHART_NAME="microponics"
 STORAGE_PATH="${HOME}/storage"
 DEFAULT_NODE_NAME=`hostname`
+SSH_KEY_PATH="${HOME}/microponics/keys/microponics.pub"
 
 sudo systemctl start docker.service
 microk8s start
@@ -23,14 +24,17 @@ if [ "${MASTER}" = "true" ]; then
   microk8s helm3 install ${CHART_NAME} ${CHART_PATH} -f ${CHART_PATH}/values.yaml --debug
 
   set +x
-  echo "Stabilising deployment"
+  echo "Stabilising deployment..."
   sleep 20s
 
 else
   microk8s kubectl label nodes ${DEFAULT_NODE_NAME} storage_node=false --overwrite
+  sudo systemctl start sshd.service
   set +x
-  echo 'Run `microk8s add-node` on the MASTER node - this will output a command of the form:'
-  echo '`microk8s join ip-XX-XX-XX-XX:XXXXXX/XXXXXXXXXXXXXXXXXXXXXXX` - run this command on THIS node to connect'
+  if [ -z "`cat ${HOME}/.ssh/authorized_keys | grep microponics`" ]; then
+    cat ${SSH_KEY_PATH} >> ${HOME}/.ssh/authorized_keys
+  fi
+  echo "Run \`~/microponics/add-node.sh `hostname` `ip addr | awk 'print $7'`\` on the master node"
 fi
 
 microk8s status --wait-ready
