@@ -1,7 +1,8 @@
 #!/bin/sh -ex
 
-IMAGE_PATH="install/images"
-CHART_PATH="install/microponics"
+PROJECT_DIR="${HOME}/microponics"
+IMAGE_PATH="${PROJECT_DIR}/install/images"
+CHART_PATH="${PROJECT_DIR}/install/microponics" # where the chart will be created
 STORAGE_IMAGE="github.com/omnimeta/microponics/storage:local"
 FRONTEND_IMAGE="github.com/omnimeta/microponics/frontend:local"
 GROW_CTRL_IMAGE="github.com/omnimeta/microponics/grow-controller:local"
@@ -18,4 +19,4 @@ docker save ${STORAGE_IMAGE} > ${IMAGE_PATH}/storage-image.tar
 if [ -d "${CHART_PATH}" ]; then
   rm -r ${CHART_PATH}
 fi
-cp -r helm/microponics ${CHART_PATH}
+cp -r ${PROJECT_DIR}/helm/microponics ${CHART_PATH}
