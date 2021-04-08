@@ -11,7 +11,8 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
-  local:
+  hostPath:
+    type: DirectoryOrCreate
     path: {{ .Values.storage.pathOnHost }}
   nodeAffinity:
     required:

@@ -74,9 +74,15 @@ spec:
           volumeMounts:
             - name: health
               mountPath: /tmp/health
+            #- name: i2c
+            #  mountPath: /dev/i2c
       volumes:
         - name: health
           emptyDir: {}
+        #- name: i2c
+        #  hostPath:
+        #    type: CharDevice
+        #    path: /dev/i2c
       {{- with .Values.growcontroller.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
