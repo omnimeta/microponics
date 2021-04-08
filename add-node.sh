@@ -19,5 +19,5 @@ eval `ssh-agent -k`
 sleep 10s
 echo "Node added"
 microk8s kubectl get nodes
-printf '\n%s\n' 'Run the following command to remove the added node from the cluster'
+printf '\n%s\n' 'Run the following command to remove the added node from the cluster:'
 printf '%s\n' "~/microponics/remove-node.sh ${NODE_PRIVATE_IP}"

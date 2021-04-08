@@ -31,7 +31,7 @@ if ping -c1 ${NODE_PRIVATE_IP}; then
   eval `ssh-agent`
   chmod 600 ${SSH_KEY_PATH}
   ssh-add ${SSH_KEY_PATH}
-  ssh -o "StrictHostKeyChecking no" ${NODE_USER}@${NODE_PRIVATE_IP} "echo ${NODE_USER_PW} | sudo -S /snap/bin/microk8s leave"
+  ssh -o "StrictHostKeyChecking no" ${NODE_USER}@${NODE_PRIVATE_IP} "echo ${NODE_USER_PW} | sudo -S /snap/bin/microk8s leave && /snap/bin/microk8s stop"
   eval `ssh-agent -k`
   sleep 10s
   set +e
