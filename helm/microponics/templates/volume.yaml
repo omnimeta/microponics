@@ -4,15 +4,13 @@ metadata:
   name: primary-storage
 spec:
   capacity:
-    storage: 20Gi
+    storage: 2Gi
   volumeMode: Filesystem
   accessModes:
   # can be mounted readwrite by a single node
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-storage
-  hostPath:
-    type: DirectoryOrCreate
+  local:
     path: {{ .Values.storage.pathOnHost }}
   nodeAffinity:
     required:

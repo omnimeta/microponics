@@ -9,7 +9,6 @@ spec:
   resources:
     requests:
       storage: 20Gi
-  storageClassName: local-storage
   selector:
     matchLabels: {}
     matchExpressions: []

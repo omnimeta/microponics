@@ -8,9 +8,46 @@ STORAGE_PATH="${HOME}/storage"
 DEFAULT_NODE_NAME=`hostname`
 SSH_KEY_PATH="${PROJECT_DIR}/keys/microponics.pub"
 AUTH_KEY_FILE="${HOME}/.ssh/authorized_keys"
+HA_CONFIG_PATH="/var/snap/microk8s/current/args/ha-conf"
+
+function setup_failure_domain() {
+  ID=`ip route get 1.2.3.4 | awk '{ print $7 }' | grep -Eo '[0-9]+$'`
+  set +ex
+  if ! grep "failure-domain=" ${HA_CONFIG_PATH}; then
+    echo "failure-domain=${ID}" > ${HA_CONFIG_PATH}
+  fi
+}
+
+function start_snapd() {
+  set +ex
+  if ! (systemctl status snapd.service | grep 'Active: active'); then
+    sudo systemctl start snapd.service
+  fi
+}
+
+function start_or_restart_microk8s() {
+  set +ex
+  if microk8s status | grep 'not running'; then
+    microk8s start
+  else
+    microk8s stop
+    microk8s start
+  fi
+}
+
+function setup_calico() {
+  set +ex
+  microk8s kubectl -n kube-system patch daemonset calico-node -p "`${PROJECT_DIR}/install/calico-patch.sh`"
+  if microk8s kubectl -n kube-system get pods | grep "calico-*"; then
+    kubectl -n kube-system delete pod `kubectl get pods -n kube-system | awk '/calico-*/ { print $1 }'`
+  fi
+}
 
 sudo systemctl start docker.service
-microk8s start
+start_snapd
+setup_failure_domain
+start_or_restart_microk8s
+${PROJECT_DIR}/reinforce.sh
 microk8s enable storage
 microk8s ctr image import ${IMAGE_PATH}/grow-controller-image.tar --no-unpack
 
@@ -20,7 +57,8 @@ if [ "${1}" = "master" ]; then
     mkdir -p ${STORAGE_PATH}
   fi
 
-  microk8s enable ingress helm3
+  microk8s enable dns ingress helm3
+  setup_calico
   microk8s ctr image import ${IMAGE_PATH}/storage-image.tar --no-unpack
   microk8s ctr image import ${IMAGE_PATH}/frontend-image.tar --no-unpack
   microk8s helm3 install ${CHART_NAME} ${CHART_PATH} -f ${CHART_PATH}/values.yaml --debug

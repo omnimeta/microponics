@@ -11,7 +11,11 @@ for SVC in snap.microk8s.daemon-cluster-agent \
            snap.microk8s.daemon-scheduler \
            snap.microk8s.daemon-controller-manager; do
 
-  if ! (systemctl status ${SVC} | grep -o 'running'); then
+  if systemctl status ${SVC} | grep -o 'Active: failed'; then
+    sudo systemctl reset-failed ${SVC}.service
     sudo systemctl start ${SVC}.service
+  elif ! (systemctl status ${SVC} | grep 'Active: active'); then
+    sudo systemctl restart ${SVC}.service || sudo systemctl start ${SVC}.service
+    echo "Restarted ${SVC}"
   fi
 done

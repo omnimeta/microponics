@@ -48,7 +48,8 @@ class SQLDatabase:
             temperature TEXT,
             light_on INTEGER,
             ph REAL,
-            ppm REAL
+            ppm REAL,
+            humidity REAL
         );""")
 
 
